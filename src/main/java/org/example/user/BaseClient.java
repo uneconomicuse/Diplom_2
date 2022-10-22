@@ -1,6 +1,6 @@
-package user;
+package org.example.user;
 
-import config.Config;
+import org.example.config.Config;
 import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.given;

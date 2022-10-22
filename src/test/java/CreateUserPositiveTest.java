@@ -2,16 +2,16 @@ import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import user.User;
-import user.UserClient;
-import user.UserCredentials;
+import org.example.user.User;
+import org.example.user.UserClient;
+import org.example.user.UserCredentials;
 
 import static org.junit.Assert.assertTrue;
 
 public class CreateUserPositiveTest {
     User user;
     UserClient userClient;
-    private String userId;
+    private String token;
 
     @Before
     public void setup() {
@@ -22,7 +22,7 @@ public class CreateUserPositiveTest {
 
     @After
     public void teardown() {
-        userClient.delete(userId);
+        userClient.delete(token);
 
     }
 
@@ -34,7 +34,7 @@ public class CreateUserPositiveTest {
                 .extract().path("success");
 
         UserCredentials creds = UserCredentials.from(user);
-        userId = userClient.login(creds)
+        token = userClient.login(creds)
                 .extract().path("accessToken");
 
         assertTrue(isTrue);

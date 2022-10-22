@@ -1,18 +1,17 @@
 import io.qameta.allure.junit4.DisplayName;
+import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import user.User;
-import user.UserClient;
-import user.UserCredentials;
+import org.example.user.User;
+import org.example.user.UserClient;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CreateUserNegativeTest {
     User user;
     UserClient userClient;
-    private String userId;
+    private String token;
     private String emptyField = "";
 
     @Before
@@ -29,25 +28,25 @@ public class CreateUserNegativeTest {
     @Test
     @DisplayName("Создание пользователя с используемыми учетными данными")
     public void userDuplicateCreateTest() {
-       userClient.create(user)
-                .statusCode(200);
+        String token = userClient.create(user)
+                .statusCode(200)
+                .extract().path("accessToken");
 
         String newEmail = user.getEmail();
         user.setEmail(newEmail);
 
-        boolean isCreateFalse = userClient.create(user)
-                .extract().path("success");
+        Response response =  userClient.create(user)
+                .extract().response();
 
-        UserCredentials creds = UserCredentials.from(user);
-        userId = userClient.login(creds)
-                .statusCode(200)
-                .extract().path("accessToken");
+        String duplicateUserToken = response.path("accessToken");
 
-        boolean isDeleteTrue = userClient.delete(userId)
-                .extract().path("success");
+        if (duplicateUserToken == null) {
+            assertEquals(403, response.statusCode());
+        } else {
+            userClient.delete(duplicateUserToken);
+        }
 
-        assertFalse(isCreateFalse);
-        assertTrue(isDeleteTrue);
+        userClient.delete(token);
     }
 
     @Test
@@ -55,11 +54,11 @@ public class CreateUserNegativeTest {
     public void userEmptyEmailCreateTest() {
         user.setEmail(emptyField);
 
-        boolean isFalse = userClient.create(user)
+        boolean isSuccess = userClient.create(user)
                 .statusCode(403)
                 .extract().path("success");
 
-        assertFalse(isFalse);
+        assertFalse(isSuccess);
     }
 
     @Test
@@ -67,11 +66,11 @@ public class CreateUserNegativeTest {
     public void userEmptyPasswordCreateTest() {
         user.setPassword(emptyField);
 
-        boolean isFalse = userClient.create(user)
+        boolean isSuccess = userClient.create(user)
                 .statusCode(403)
                 .extract().path("success");
 
-        assertFalse(isFalse);
+        assertFalse(isSuccess);
     }
 
     @Test
@@ -79,10 +78,10 @@ public class CreateUserNegativeTest {
     public void userEmptyNameCreateTest() {
         user.setPassword(emptyField);
 
-        boolean isFalse = userClient.create(user)
+        boolean isSuccess = userClient.create(user)
                 .statusCode(403)
                 .extract().path("success");
 
-        assertFalse(isFalse);
+        assertFalse(isSuccess);
     }
 }

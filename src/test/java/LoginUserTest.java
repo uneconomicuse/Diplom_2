@@ -2,9 +2,9 @@ import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import user.User;
-import user.UserClient;
-import user.UserCredentials;
+import org.example.user.User;
+import org.example.user.UserClient;
+import org.example.user.UserCredentials;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -13,7 +13,7 @@ public class LoginUserTest {
 
     User user;
     UserClient userClient;
-    private String userId;
+    private String token;
     private String newEmail = "email212121@coden.com";
     private String newPass = "991991";
 
@@ -25,7 +25,7 @@ public class LoginUserTest {
 
     @After
     public void teardown() {
-        userClient.delete(userId);
+        userClient.delete(token);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class LoginUserTest {
 
         Thread.sleep(5000);
         UserCredentials creds = UserCredentials.from(user);
-        userId = userClient.login(creds)
+        token = userClient.login(creds)
                 .statusCode(200)
                 .extract().path("accessToken");
 
@@ -62,7 +62,7 @@ public class LoginUserTest {
         Thread.sleep(5000);
         user.setEmail(oldEmail);
         UserCredentials creds1 = UserCredentials.from(user);
-        userId = userClient.login(creds1)
+        token = userClient.login(creds1)
                 .statusCode(200)
                 .extract().path("accessToken");
 

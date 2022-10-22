@@ -1,4 +1,4 @@
-package user;
+package org.example.user;
 
 import io.qameta.allure.Step;
 import org.apache.commons.lang3.RandomStringUtils;

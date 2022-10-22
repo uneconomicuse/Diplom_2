@@ -1,13 +1,12 @@
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import order.OrdersClient;
-import org.junit.After;
+import org.example.order.OrdersClient;
 import org.junit.Before;
 import org.junit.Test;
-import user.User;
-import user.UserClient;
-import user.UserCredentials;
+import org.example.user.User;
+import org.example.user.UserClient;
+import org.example.user.UserCredentials;
 
 
 import java.util.ArrayList;
@@ -16,13 +15,13 @@ import java.util.List;
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.junit.Assert.*;
 
-public class CreateOrderPositiveTest {
+public class CreateOrderTest {
     User user;
     UserClient userClient;
     OrdersClient ordersClient;
 
 
-    private String userId;
+    private String token;
 
     @Before
     public void setup() {
@@ -40,7 +39,7 @@ public class CreateOrderPositiveTest {
 
         Thread.sleep(5000);
         UserCredentials creds = UserCredentials.from(user);
-        userId = userClient.login(creds)
+        token = userClient.login(creds)
                 .statusCode(200)
                 .extract().path("accessToken");
 
@@ -49,7 +48,7 @@ public class CreateOrderPositiveTest {
         Thread.sleep(5000);
         Response responseIngredients = ordersClient.getIngredients();
         List<String> ingredients = responseIngredients.path("data._id");
-        boolean response = ordersClient.createOrder(ingredients, userId)
+        boolean response = ordersClient.createOrder(ingredients, token)
                 .statusCode(200)
                 .extract().path("success");
 
@@ -57,7 +56,7 @@ public class CreateOrderPositiveTest {
 
         Thread.sleep(10000);
 
-        userClient.delete(userId);
+        userClient.delete(token);
     }
 
     @Test
@@ -82,14 +81,14 @@ public class CreateOrderPositiveTest {
 
         Thread.sleep(5000);
         UserCredentials creds = UserCredentials.from(user);
-        userId = userClient.login(creds)
+        token = userClient.login(creds)
                 .statusCode(200)
                 .extract().path("accessToken");
 
         Thread.sleep(5000);
         assertTrue(isTrue);
 
-        boolean response = ordersClient.createOrder(null, userId)
+        boolean response = ordersClient.createOrder(null, token)
                 .statusCode(400)
                 .extract().path("success");
 
@@ -97,7 +96,7 @@ public class CreateOrderPositiveTest {
 
         Thread.sleep(5000);
 
-        userClient.delete(userId);
+        userClient.delete(token);
     }
 
     @Test
@@ -125,20 +124,20 @@ public class CreateOrderPositiveTest {
 
         Thread.sleep(5000);
         UserCredentials creds = UserCredentials.from(user);
-        userId = userClient.login(creds)
+        token = userClient.login(creds)
                 .statusCode(200)
                 .extract().path("accessToken");
 
         assertTrue(isTrue);
 
         Thread.sleep(5000);
-        ValidatableResponse response = ordersClient.createOrder(test, userId);
+        ValidatableResponse response = ordersClient.createOrder(test, token);
         int statusCode = response.extract().statusCode();
 
         assertEquals(SC_INTERNAL_SERVER_ERROR, statusCode);
 
         Thread.sleep(5000);
 
-        userClient.delete(userId);
+        userClient.delete(token);
     }
 }

@@ -1,11 +1,11 @@
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
-import order.OrdersClient;
+import org.example.order.OrdersClient;
 import org.junit.Before;
 import org.junit.Test;
-import user.User;
-import user.UserClient;
-import user.UserCredentials;
+import org.example.user.User;
+import org.example.user.UserClient;
+import org.example.user.UserCredentials;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class OrderListTest {
     OrdersClient ordersClient;
 
 
-    private String userId;
+    private String token;
 
     @Before
     public void setup() throws InterruptedException {
@@ -36,7 +36,7 @@ public class OrderListTest {
                 .extract().path("success");
 
         UserCredentials creds = UserCredentials.from(user);
-        userId = userClient.login(creds)
+        token = userClient.login(creds)
                 .statusCode(200)
                 .extract().path("accessToken");
 
@@ -44,19 +44,19 @@ public class OrderListTest {
 
         Response responseIngredients = ordersClient.getIngredients();
         List<String> ingredients = responseIngredients.path("data._id");
-        boolean response = ordersClient.createOrder(ingredients, userId)
+        boolean response = ordersClient.createOrder(ingredients, token)
                 .statusCode(200)
                 .extract().path("success");
 
         assertTrue(response);
 
-        boolean orderListResponse = ordersClient.getOrderList(userId)
+        boolean orderListResponse = ordersClient.getOrderList(token)
                 .statusCode(200)
                 .extract().path("success");
 
         assertTrue(orderListResponse);
 
-        userClient.delete(userId);
+        userClient.delete(token);
     }
 
     @Test

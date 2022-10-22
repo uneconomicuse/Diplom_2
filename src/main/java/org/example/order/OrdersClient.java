@@ -1,10 +1,10 @@
-package order;
+package org.example.order;
 
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import org.json.JSONObject;
-import user.BaseClient;
+import org.example.user.BaseClient;
 
 
 import java.util.List;
